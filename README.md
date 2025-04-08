@@ -20,24 +20,22 @@ To set up **command-post**, you need [ollama](https://github.com/ollama/ollama) 
 ```shell
 git clone {url}
 ```
-3. Install the dependencies.
+2. Install the dependencies.
 ```shell
 pip install -r requirements.txt
 ```
-5. Iniitialize model configs. (needs to be run only once)
+3. Iniitialize model configs. (needs to be run only once)
 ```shell
 python init.py
 ```
 When asked which Ollama model to use, choose one from [Ollama library](https://ollama.com/library).
-7. Run app.py to host the app via streamlit
+4. Run app.py to host the app via streamlit
 ```shell
 streamlit run app.py
 ```
 
 ## Usage
 Ask about today’s weather, market trends, breaking news, or any real-time updates to get a analytical natural language briefing. (currently supports weather and stock data)
-Try:
-```How is the weather today?```
-```Analyze Bitcoin price trends today```
+Try ``How is the weather today?``, ``Analyze Bitcoin price trends today``
 
 
