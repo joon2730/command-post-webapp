@@ -11,4 +11,25 @@ A web-based, visual version of [Command Post CLI](https://github.com/pauljoohyun
 - Generates response using the LLM.
 - Displays output in a web interface.
 
-## Installation
+## How to Run
+### Prerequisite
+To set up **command-post**, you need [ollama](https://github.com/ollama/ollama) and running.
+
+### Installation
+1. Clone the git repository
+   ``git clone {url}``
+2. Install the dependencies.
+   ``pip install -r requirements.txt``
+3. Iniitialize model configs. (needs to be run only once)
+   ``python init.py``
+   When asked which Ollama model to use, choose one from [Ollama library](https://ollama.com/library).
+4. Run app.py to host the app via streamlit
+   ``streamlit run app.py``
+
+## Usage
+Ask about today’s weather, market trends, breaking news, or any real-time updates to get a analytical natural language briefing. (currently supports weather and stock data)
+Try:
+  ``How is the weather today?``
+  ``Analyze Bitcoin price trends today``
+
+
