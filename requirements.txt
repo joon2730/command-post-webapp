@@ -1,0 +1,8 @@
+langchain-community==0.3.21
+langchain-core==0.3.54
+langchain-ollama==0.3.2
+langgraph==0.3.31
+ollama==0.4.8
+pandas==2.2.3
+streamlit==1.44.1
+yfinance==0.2.55
