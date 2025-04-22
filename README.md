@@ -24,11 +24,7 @@ git clone {url}
 ```shell
 pip install -r requirements.txt
 ```
-3. Iniitialize model configs (needs to be run only once). When asked which Ollama model to use, choose one from [Ollama library](https://ollama.com/library).
-```shell
-python init.py
-```
-4. Run app.py to host the app via streamlit
+3. Run app.py to host the app via streamlit
 ```shell
 streamlit run app.py
 ```
