@@ -1,28 +1,9 @@
-from command_post.ollama_binding import ollama_generate
-from command_post.modules.geocoding import get_coords
-import datetime
-import requests
+import yfinance as yf
 import json
-
-def get_location(get_raw=False):
-    IP_API = "http://ip-api.com/json/"
-    r = requests.get(IP_API)
-    data = json.loads(r.content.decode())
-    if get_raw:
-        return data
-    else:
-        return (data["lat"], data["lon"])
-
-# Returns [start_date, end_date, location]
-def filter_weather_params(prompt, config):
-    wrapped_prompt = f"It is currently {datetime.datetime.now().isoformat()}. "
-    wrapped_prompt += f"Given the following prompt \"{prompt}\", "
-    wrapped_prompt += "an API call is to be made for weather data. "
-    wrapped_prompt += "Tell me only the start date, end date, and location to query in the following json format: [\"YYYY-mm-dd\", \"YYYY-mm-dd\", \"LOCATION\"]. "
-    wrapped_prompt += "If location is not given, leave the last entry as a blank string."
-    data = ollama_generate(config["command_post_model"], wrapped_prompt)
-    return json.loads(data)
-
+from langchain_core.tools import tool
+import pandas as pd
+from typing import Annotated
+import requests
 
 def get_weather(location, start_date, end_date):
     if type(location) == tuple:

@@ -1,39 +1,45 @@
 import yfinance as yf
 import json
-from datetime import datetime
-from zoneinfo import ZoneInfo
-from command_post.ollama_binding import ollama_generate
+# from datetime import datetime
+# from zoneinfo import ZoneInfo
+from langchain_core.tools import tool
+import pandas as pd
+from typing import Annotated
 
-def generate_finance_report(prompt, config, period="3d", interval="1h", timezone="America/New_York", length="a paragraph", verbose=True, visual=True):
-
-    # Determine the ticker symbol from the prompt
-    prompt = f"Given the following prompt: \"{prompt}\", if this is a name of a security in the stock market, give its yfinance ticker symbol. If not, output \"None\".\n"
-    prompt += "Only print either the symbol or None"
+@tool
+def download_stock_data(
+    ticker: Annotated[str, "The stock symbol in Yfinance"], 
+    period: Annotated[str, "Time range to fetch data ('1d', '5d', '1mo', '3mo', '6mo', '1y')"], 
+    interval: Annotated[str, "Data granularity ('1m', '5m', '1h', '1d', '1wk', '1mo')"]
+):
+    """
+    Get real-time close price of stock, crypto, ETF, etc.
+    """
+    df = yf.download(ticker, period=period, interval=interval, progress=False)
+    if df.empty:
+        return json.dumps({"error": f"No data found for {ticker}."})
     
-    ticker = ollama_generate(config["command_post_model"], prompt).strip()
+    # Format datetime index and round numeric values
+    df.index = pd.to_datetime(df.index)
+    df.index = df.index.strftime("%Y-%m-%d %H:%M")
+    df = df.round(2)
 
-    print(f"Ticker: {ticker}")
-    
-    if ticker == "None":
-        raise Exception(f"No ticker symbol found in the prompt {prompt}.")
+    # Create close_price list as list of [date, close] pairs
+    close_price = [
+        [date, float(close)] for date, close in zip(df.index, df["Close"][ticker])
+    ]
 
-    # Download the data using yfinance
-    try:
-        df = yf.download(ticker, period=period, interval=interval, auto_adjust=True)
-        df.index = df.index.tz_convert(timezone)
-        df.index = df.index.strftime("%Y-%m-%d %H:%M")
-        data = df["Close"][ticker].to_dict()
-        assert data, "Data is empty"
-    except Exception as e:
-        raise Exception(f"Failed to download data for ticker {ticker}: {e}")
-    
-    # Write the prompt for the model
-    wrapped_prompt = f"It is currently {datetime.now().astimezone(ZoneInfo(timezone)).isoformat()} in timezone {timezone}. "
-    wrapped_prompt += f"You have acquired a close price data for {ticker} over the period {period}, in timezone {timezone}, \n"
-    wrapped_prompt += json.dumps(data) + "\n"
-    wrapped_prompt += f"Now give an analyzed response to {ticker} focused on the highs, lows, percentage change, and trends"
-    wrapped_prompt += f"in {length}" if length else ""
-    wrapped_prompt += "Mention the start and end datetime of the data with the timezone for clarity, and round the values to 2 decimal places."
-    wrapped_prompt += "Note that the response is to be read by tts, so avoid using any special characters or formatting, and replace any symbols and acronyms (e.g. tickers) to natural language."
+    result = {
+        "ticker": ticker,
+        "period": period,
+        "interval": interval,
+        "close_price": close_price
+    }
 
-    return wrapped_prompt, df["Close"][ticker]
+    return json.dumps(result, ensure_ascii=False, indent=2)
+    # return {
+    #     "description": f"Close price of {ticker} for recent {period} with {interval} interval.", 
+    #     "dataframe": df["Close"][ticker],
+    #     "json": json.dumps(result, ensure_ascii=False, indent=2)
+    # }
+
