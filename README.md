@@ -4,7 +4,8 @@ A web-based, visual version of [Command Post CLI](https://github.com/pauljoohyun
 ## How it Works
 **Command Post** is designed as an intelligent assistant that delivers real-time briefings across multiple domains like weather, finance, and news. **Retrieval-Augmented Generation (RAG)** is used to provide up-to-date and context-aware responses.
 
-- New
+### New
+
 **Command Post** now deploys multi-agent system with langgraph for more versatile applications. Search agent is bound to tool functions to intellectually select and call apis for real-time data-retrieval. Respond agent generates a final response for user given the real-time data by search agent.
 
 ## How to Run
